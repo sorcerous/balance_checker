@@ -1,0 +1,42 @@
+.heading {
+  padding: 20px;
+  justify-content: center;
+  background-color: grey;
+  align-items: center;
+}
+.heading h1 {
+  text-align: center;
+  color: white;
+}
+
+.formField {
+  padding: 20px;
+}
+.formField input {
+  margin-left: 10px;
+  width: 20%;
+}
+
+.submitButton {
+  padding: 20px;
+}
+.submitButton button {
+  margin: 20px;
+
+}
+.submitButton input {
+  width: 10%;
+}
+
+.drawLine {
+  border: 1px solid lightgrey;
+}
+.rowData {
+  justify-content: center;
+  padding-left: 10%;
+}
+.noData{
+  justify-content: center;
+  color: lightgrey;
+  text-align: center;
+}
