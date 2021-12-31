@@ -3,17 +3,21 @@ import axios from "axios";
 import "./App.css";
 
 const baseURL =
-  "https://api.covalenthq.com/v1/1/address/demo.eth/balances_v2/?key=ckey_docs";
+  "https://api.covalenthq.com/v1/1/address/TOKEN/balances_v2/?key=ckey_73930347c3fe427e83a938e7e3c";
 
 const BalanceForm = () => {
   const [checkBalance, setBalance] = useState(false);
   const [inputToken, setInputToken] = useState("");
   const [listItem, setListItem] = useState<any>([]);
-  const [isEnabled, setIsEnabled] = useState(true);
+  const [responseObj, setResponseObj] = useState<any>([]);
+  const [isLoading, setLoading] = useState(true)
 
   // Display all data on button click
   const handleSubmit = () => {
     setBalance(true);
+    var re = /TOKEN/gi; 
+    var formattedURL = baseURL.replace(re, inputToken); 
+    getBalance(formattedURL);
   };
 
   // Clear all input fields and data
@@ -24,26 +28,34 @@ const BalanceForm = () => {
 
   // use the onChangeSubmit : if input field is blank, so button will desable or after removing the input text button will also disable.
   const onChangeSubmit = (event: any) => {
-    setInputToken(event.target.value);
-    inputToken.length > 1 ? setIsEnabled(false) : setIsEnabled(true);
+    setInputToken(event.currentTarget.value);
+    console.log(inputToken);
   };
 
-  // first time get the data from getBalance function.
   useEffect(() => {
-    getBalance();
-  }, []);
+    if(responseObj === null){
+      console.log(responseObj);
+      setListItem(null);
+    }else{
+      setListItem(responseObj.data);
+    }
+}, [responseObj]);
 
   // use the axios for fetch all data.
-  const getBalance = () => {
+  const getBalance = (formattedURL:string) => {
     axios
-      .get(`${baseURL}`)
+      .get(formattedURL)
       .then((response) => {
-        if (response.status === 200) {
-          setListItem(response?.data);
+        if (response.status === 200 && response.data.error === false) {
+          console.log(response);
+          setResponseObj(response);
+        }else{
+          setResponseObj(null);
         }
       })
       .catch((error) => {
         console.log(error);
+        setResponseObj(null);
       });
   };
 
@@ -65,12 +77,11 @@ const BalanceForm = () => {
         </label>
       </div>
       <div className="submitButton">
-        <button disabled={isEnabled} onClick={handleSubmit}>
+        <button onClick={handleSubmit}>
           Check Balances
         </button>
         <button
           className="clearButton"
-          disabled={isEnabled}
           onClick={handleClear}
         >
           Clear
@@ -81,9 +92,9 @@ const BalanceForm = () => {
         {checkBalance && listItem ? (
           <>
             <div>
-              <h4> Address : {listItem.data.address}</h4>
-              <h4> Updated at : {listItem.data.updated_at}</h4>
-              <h4> Next update at : {listItem.data.updated_at}</h4>
+              <h4>Address : {listItem.data.address}</h4>
+              <h4>Updated at : {listItem.data.updated_at}</h4>
+              <h4>Next update at : {listItem.data.updated_at}</h4>
               <h4>Currency : {listItem.data.quote_currency}</h4>
             </div>
             <div className="drawLine" />
@@ -93,7 +104,7 @@ const BalanceForm = () => {
                 return (
                   <>
                     <p>
-                      <b> Token Name :</b> {item.contract_name}
+                      <b>Token Name :</b> {item.contract_name}
                     </p>
                     <p>
                       <b>Address:</b> {item.contract_address}
@@ -112,8 +123,7 @@ const BalanceForm = () => {
           </>
         ) : (
           <div className="noData">
-            <h1>No data found.</h1>
-            <h4>please click the check balance button and get all data</h4>
+            <h4>Please enter correct address and click on 'Check Balance'.</h4>
           </div>
         )}
       </div>
